@@ -1,0 +1,4 @@
+*petApp*
+*.env
+*.vscode
+*__pycache__*
