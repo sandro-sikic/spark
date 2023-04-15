@@ -27,10 +27,16 @@ def Returns_image_in_base64_on_requests(text: str):
     response = requests.post(url=StabilityIMGendpoint, headers=base_headers, json=payload)
     data = response.json()
     image_base64 = ""
-    
-    for i, image in enumerate(data["artifacts"]):
-        image_base64 = image["base64"]
-        with open(f"./image{i}.png", "wb") as f:
-            f.write(base64.b64decode(image_base64))
+    image_base64 = data["artifacts"][0]["base64"]
 
+    return f'<img src="data:image/png;base64,{image_base64}" alt="Generated Image">'
+
+@router.get("/text-to-image-postman2", response_class=HTMLResponse)
+def Returns_enhanced_image_in_base64_on_requests(text: str):
+
+    payload = enhanced_image_properties(text)
+    response = requests.post(url=StabilityIMGendpoint, headers=base_headers, json=payload)
+    data = response.json()
+    image_base64 = ""    
+    image_base64 = data["artifacts"][0]["base64"]
     return f'<img src="data:image/png;base64,{image_base64}" alt="Generated Image">'
