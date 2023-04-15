@@ -2,26 +2,15 @@
 from fastapi import APIRouter
 import requests,base64
 from settings.config import *
-
+from settings.image_settings import *
+from fastapi.responses import HTMLResponse
 router = APIRouter()
 
-@router.get("/text-to-image")
-def getting_a_picture(text: str):
-    json_data = {
-        "text_prompts": [
-            {
-                "text": text
-            }
-        ],
-        "cfg_scale": 7,
-        "clip_guidance_preset": "FAST_BLUE",
-        "height": 1024,
-        "width": 1024,
-        "samples": 1,
-        "steps": 30,
-    }
-    
-    response = requests.post(url=text_to_img_url, headers=base_headers, json=json_data)
+@router.get("/text-to-image-local")
+def generate_and_save_image(text: str):
+
+    payload = image_properties(text)
+    response = requests.post(url=StabilityIMGendpoint, headers=base_headers, json=payload)
     data = response.json()
 
     for i, image in enumerate(data["artifacts"]):
@@ -29,3 +18,19 @@ def getting_a_picture(text: str):
             f.write(base64.b64decode(image["base64"]))
 
     return {"message": "Image(s) generated and saved."}
+
+
+@router.get("/text-to-image-postman", response_class=HTMLResponse)
+def Returns_image_in_base64_on_requests(text: str):
+
+    payload = image_properties(text)
+    response = requests.post(url=StabilityIMGendpoint, headers=base_headers, json=payload)
+    data = response.json()
+    image_base64 = ""
+    
+    for i, image in enumerate(data["artifacts"]):
+        image_base64 = image["base64"]
+        with open(f"./image{i}.png", "wb") as f:
+            f.write(base64.b64decode(image_base64))
+
+    return f'<img src="data:image/png;base64,{image_base64}" alt="Generated Image">'
