@@ -4,6 +4,7 @@ import requests,base64, httpx
 from settings.config import *
 from settings.image_settings import *
 from fastapi.responses import HTMLResponse
+import json
 router = APIRouter()
 
 
@@ -39,3 +40,17 @@ async def Returns_enhanced_image_in_base64_on_requests(text: str):
     image_base64 = data["artifacts"][0]["base64"]
 
     return f'<img src="data:image/png;base64,{image_base64}" alt="Generated Image">'
+
+
+@router.get("/openapi")
+async def openapi(text: str):
+    data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "assistant", "content": text }],
+        "temperature": 0.2
+    }
+    response = requests.post(open_api_url, headers=openapi_base_headers, data=json.dumps(data))
+    response_json = response.json()
+    response_back = response_json['choices'][0]['message']['content']
+    response = json.loads(response_back)
+    return response
