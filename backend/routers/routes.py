@@ -214,11 +214,10 @@ def test(choice_text: str | None = None):
         storyline = unfinished_book['storyline'][0]
     else:
     
-# if there is no book create one
-
-        # send request to chatgpt for the first category query
-        response = chatGpt(story_builder[0]['prequery'] )
-        choices = json.loads(response) if story_builder[1]['return_type'] == 'choice' else []
+        # if there is no book create one
+        story = [story for story in story_builder if story['order'] == 0][0]
+        response = chatGpt(story['prequery'] )
+        choices = json.loads(response) if story['return_type'] == 'choice' else []
         # GENERATE BOOK OBJECT
         new_book = Book(
             id=f"book{user.id}",
@@ -227,9 +226,9 @@ def test(choice_text: str | None = None):
             storyline=[Prompt(
                 order=0,
                 prompt="",
-                type=story_builder[0]['return_type'],
+                type=story['return_type'],
                 image_url="",
-                text=response,
+                text="",
                 choices=[Choice(**choice_data) for choice_data in choices] if choices else None
             )]
         )
@@ -241,10 +240,13 @@ def test(choice_text: str | None = None):
 
 
 
-    print('test')
+# 
+
+
+
 
 #   THERE IS UNFINISHED BOOK
-    if storyline['type'] == 'choices':
+    if storyline['type'] == 'choice':
         for choice in storyline['choices']:
             if choice['text'] == choice_text:
                 # UPDATE IN DB TO TRUE
