@@ -45,7 +45,7 @@ export default function Home() {
 				inspire you and match your style
 			</p>
 
-			<MenuItem title="Start" href="" />
+			<MenuItem title="Start" href="/story/book_id/0" />
 			<MenuItem title="Bookshelf" href="/bookshelf" />
 			<MenuItem title="About" href="/about" />
 
