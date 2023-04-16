@@ -3,13 +3,14 @@ from fastapi import APIRouter
 import requests,base64, httpx
 from settings.config import *
 from settings.image_settings import *
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 import json
 from models.models import *
 import uuid
 
 router = APIRouter()
 
+image_dir = "./images/"
 
 @router.get("/text-to-image-local" ,  tags=["Stable Diffusion"])
 async def generate_and_save_image(text: str):
@@ -199,7 +200,7 @@ story_builder = [
     
 
 @router.get("/openapi/test" ,  tags=["chat-gpt"])
-def test(choice_text: str | None = None):
+async def test(choice_text: str | None = None):
     # get user from database
     # user = None
     user = User.objects(id='1').first()
@@ -236,11 +237,72 @@ def test(choice_text: str | None = None):
         user.save()
         # GIVE BACK 1st 6 items  for users to chose  "CATEGORIES'
         response = json.loads(response)
-        return response
+        # return response
+        
+# STABLE DIFFUSER PART
+
+        image_enhancer = 'cat, in a plain background,modern,stylized,futuristic'
+        image_list = []
+        for i, item in enumerate(response):
+            stable_diff_prompt_text = item['text'] + item['description'] + image_enhancer
+            payload = image_properties(stable_diff_prompt_text)
+            async with httpx.AsyncClient(timeout=40.0) as client:
+                response = await client.post(url=StabilityIMGendpoint, headers=base_headers, json=payload)
+            data = response.json()
+            image_base64 = data["artifacts"][0]["base64"]
+
+            # Save the image
+            image_name = f"img{i}"
+            image_path = os.path.join(image_dir, f"{image_name}.png")
+            with open(image_path, "wb") as f:
+                f.write(base64.b64decode(image_base64))
+
+            # Return the image URL and ID as a JSON response
+            image_url = f"http://localhost:8811/images/{image_name}.png"
+            image_list.append({"image_url": image_url, "image_name": image_name})
+            for choice, image in zip(choices, image_list):
+                choice['image_url'] = image['image_url']
+
+        
+        return choices
 
 
 
-# 
+
+# STABLE DIFFUSER ABSTRACTED
+@router.get("/stabediff/test", response_class=HTMLResponse, tags=["chat-gpt"])
+async def test():
+    image_dir = "./images/"
+
+    fake_dataset = [
+        {'text': 'Romance', 'type': 'category', 'image_description': 'Couple holding hands on a beach', 'image_url': 'https://example.com/romance.jpg', 'description': 'Stories about love and relationships'},
+        {'text': 'Mystery', 'type': 'category', 'image_description': 'Dark alleyway at night', 'image_url': 'https://example.com/mystery.jpg', 'description': 'Stories about crime, suspense, and intrigue'},
+        {'text': 'Science Fiction', 'type': 'category', 'image_description': 'Spaceship flying through space', 'image_url': 'https://example.com/scifi.jpg', 'description': 'Stories about futuristic technology and other worlds'},
+        {'text': 'Horror', 'type': 'category', 'image_description': 'Haunted house at night', 'image_url': 'https://example.com/horror.jpg', 'description': 'Stories about fear and the supernatural'},
+        {'text': 'Fantasy', 'type': 'category', 'image_description': 'Dragon flying over a castle', 'image_url': 'https://example.com/fantasy.jpg', 'description': 'Stories about magic and mythical creatures'},
+        {'text': 'Historical Fiction', 'type': 'category', 'image_description': 'Old book with a quill pen', 'image_url': 'https://example.com/historical.jpg', 'description': 'Stories set in the past, often with fictional characters'}
+    ]
+    image_enhancer = 'dramaticc,stylized,futuristic'
+    image_list = []
+    for i, item in enumerate(fake_dataset):
+        stable_diff_prompt_text = item['text'] + item['description'] + image_enhancer
+        payload = image_properties(stable_diff_prompt_text)
+        async with httpx.AsyncClient(timeout=40.0) as client:
+            response = await client.post(url=StabilityIMGendpoint, headers=base_headers, json=payload)
+        data = response.json()
+        image_base64 = data["artifacts"][0]["base64"]
+
+        # Save the image
+        image_name = f"img{i}"
+        image_path = os.path.join(image_dir, f"{image_name}.png")
+        with open(image_path, "wb") as f:
+            f.write(base64.b64decode(image_base64))
+
+        # Return the image URL and ID as a JSON response
+        image_url = f"http://localhost:8811/images/{image_name}.png"
+        image_list.append({"image_url": image_url, "image_name": image_name})
+
+    return JSONResponse(content=image_list)
 
 
 

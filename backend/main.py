@@ -9,15 +9,17 @@ from mongoengine import connect
 from mongoengine.connection import get_db
 from mongoengine import connect, Document, StringField
 from models.models import *
+from fastapi.staticfiles import StaticFiles
 
 
 connect(host=mongodb_url)
+image_dir = "./images/"
 
 # 5 USERS
-# for i in range(5):
-#     email = ''.join(random.choices(string.ascii_lowercase, k=10)) + "@example.com"
-#     user = User(id=str(i+1), email=email, books=[])
-#     user.save()
+for i in range(5):
+    email = ''.join(random.choices(string.ascii_lowercase, k=10)) + "@example.com"
+    user = User(id=str(i+1), email=email, books=[])
+    user.save()
 
 # def create_choice(choice_data):
 #     return Choice(**choice_data)
@@ -128,6 +130,7 @@ connect(host=mongodb_url)
 
 
 app = FastAPI()
+app.mount("/images", StaticFiles(directory="./images"), name="images")
 
 routers = [routes.router]
 for router in routers:

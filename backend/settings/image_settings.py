@@ -1,11 +1,11 @@
 
 # IMAGE SETTINGS
-default_height = 1024
-default_width = 1024
+default_height = 512
+default_width = 512
 default_cfg_scale = 7
 default_clip_guidance_preset = "FAST_BLUE"
 default_samples = 1
-default_steps = 30
+default_steps = 10
 
 
 
