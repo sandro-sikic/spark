@@ -1,7 +1,6 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 from routers import routes
 from settings.config import *
 import os, random ,string
@@ -11,7 +10,6 @@ from mongoengine.connection import get_db
 from mongoengine import connect, Document, StringField
 from models.models import *
 
-load_dotenv()
 
 connect(host=mongodb_url)
 

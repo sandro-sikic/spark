@@ -1,8 +1,6 @@
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
-mongodb_url = 'mongodb://root:example@127.0.0.1:27017/spark?authSource=admin'
+mongodb_url = 'mongodb://root:example@mongo:27017/spark?authSource=admin'
 
 api_key = os.environ.get("STABILITY_KEY")
 open_api_key = os.environ.get("OPENAPI_KEY")
