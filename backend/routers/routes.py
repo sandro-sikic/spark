@@ -6,6 +6,7 @@ from settings.image_settings import *
 from fastapi.responses import HTMLResponse
 import json
 from models.models import *
+import uuid
 
 router = APIRouter()
 
@@ -200,9 +201,9 @@ story_builder = [
 @router.get("/openapi/test" ,  tags=["chat-gpt"])
 def test(choice_text: str | None = None):
     # get user from database
-    user = None
-    get_user_from_Db = User.objects(id='1').first()
-    user = get_user_from_Db
+    # user = None
+    user = User.objects(id='1').first()
+    print(user)
     # check if user has a book that is not finished
     unfinished_book = [book for book in user['books'] if book['is_finished'] == False]
 
@@ -214,11 +215,29 @@ def test(choice_text: str | None = None):
     else:
     
 # if there is no book create one
+        response = chatGpt(story_builder[0]['prequery'] )
+        choices = json.loads(response) if story_builder[1]['return_type'] == 'choice' else []
+        
+        new_book = Book(
+            id=str(uuid.uuid4()),
+            name="New Book",
+            is_finished=False,
+            storyline=[Prompt(
+                order=0,
+                prompt="",
+                type=story_builder[0]['return_type'],
+                image_url="",
+                text=response,
+                choices=[Choice(**choice_data) for choice_data in choices] if choices else None
+            )]
+        )
+        user.books.append(new_book)
+        user.save()
         # send request to chatgpt for the first category query
         # chatGpt
-        print('CHAT GPT REQUEST')
+        # print('CHAT GPT REQUEST')
 
-
+    print('test')
 
 #   THERE IS UNFINISHED BOOK
     if storyline['type'] == 'choices':
@@ -245,7 +264,6 @@ def test(choice_text: str | None = None):
         user.save()
         return response
     elif story_builder[order]['return_type'] == 'choice':
-        print('yo')
         unfinished_book['storyline'].append(Prompt(
                 order = order,
                 prompt = "",
@@ -261,17 +279,7 @@ def test(choice_text: str | None = None):
 
 
         
-        # save to database
 
-            # driver_standings.append(
-            #     {
-            #         "driver_id": driver.driverId,
-            #         "driver_ref": driver.driverRef,
-            #         "driver_name": f"{driver.forename} {driver.surname}",
-            #         "nationality": driver.nationality,
-            #         "total_points": total_points,
-            #         "constructor_ref": constructor_ref
-            #     }
 
 
 def chatGpt(text):
