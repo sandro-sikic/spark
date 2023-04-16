@@ -3,6 +3,23 @@ version: '3.9'
 
 services:
 
+  next-install:
+    image: node:latest
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: bash -c "npm install"
+
+  next:
+    image: node:latest
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: bash -c "npm run dev"
+
   mongo:
     image: mongo
     restart: always
@@ -11,6 +28,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
+
   mongo-express:
     image: mongo-express
     restart: always
