@@ -215,12 +215,14 @@ def test(choice_text: str | None = None):
     else:
     
 # if there is no book create one
+
+        # send request to chatgpt for the first category query
         response = chatGpt(story_builder[0]['prequery'] )
         choices = json.loads(response) if story_builder[1]['return_type'] == 'choice' else []
-        
+        # GENERATE BOOK OBJECT
         new_book = Book(
-            id=str(uuid.uuid4()),
-            name="New Book",
+            id=f"book{user.id}",
+            name="",
             is_finished=False,
             storyline=[Prompt(
                 order=0,
@@ -233,9 +235,11 @@ def test(choice_text: str | None = None):
         )
         user.books.append(new_book)
         user.save()
-        # send request to chatgpt for the first category query
-        # chatGpt
-        # print('CHAT GPT REQUEST')
+        # GIVE BACK 1st 6 items  for users to chose  "CATEGORIES'
+        response = json.loads(response)
+        return response
+
+
 
     print('test')
 

@@ -16,10 +16,10 @@ load_dotenv()
 connect(host=mongodb_url)
 
 # 5 USERS
-for i in range(5):
-    email = ''.join(random.choices(string.ascii_lowercase, k=10)) + "@example.com"
-    user = User(id=str(i+1), email=email, books=[])
-    user.save()
+# for i in range(5):
+#     email = ''.join(random.choices(string.ascii_lowercase, k=10)) + "@example.com"
+#     user = User(id=str(i+1), email=email, books=[])
+#     user.save()
 
 # def create_choice(choice_data):
 #     return Choice(**choice_data)
