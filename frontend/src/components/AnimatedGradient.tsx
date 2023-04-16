@@ -18,12 +18,14 @@ export default function AnimatedGradient({
 			style={{
 				position: 'absolute',
 				background: `radial-gradient(50% 50% at 50% 50%, ${fromColor} 0%, rgba(0, 0, 0, 0) 100%)`,
-				height: '200px',
-				width: '200px',
-				right: right + 'px',
+				zIndex: '0',
+				height: '230vh',
+				width: '260vh',
+				right: right + 'rem',
 				left: left + 'px',
 				top: top + 'px',
-				bottom: bottom + 'px',
+				bottom: bottom + 'rem',
+
 			}}
 		/>
 	);
