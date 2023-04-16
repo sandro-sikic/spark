@@ -160,7 +160,7 @@ story_builder = [
     {
         "order": 0,
         "return_type": "choice",
-        "prequery": "generate a list of 6 story categories in the json format with keys: text, type, image_description, image_url, description",
+        "prequery": "generate a list of 6 story categories in strict json format with keys: text, type, image_description, image_url, description",
         "postquery": ""
     },
     {
@@ -174,7 +174,7 @@ story_builder = [
         "order": 2,
         "return_type": "choice",
         "prequery": "",
-        "postquery": " based on the provided text return 6 possible results in json format with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
+        "postquery": " based on the provided text return 6 possible results in strict json format with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
     },
     {
         "order": 3,
@@ -187,7 +187,7 @@ story_builder = [
         "order": 4,
         "return_type": "choice",
         "prequery": "",
-        "postquery": " based on the provided text return 6 possible results in Strict! json format with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
+        "postquery": " based on the provided text return 6 possible results in strict json format with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
     },
     {
         "order": 5,
