@@ -204,7 +204,8 @@ async def test(choice_text: str | None = None):
     # get user from database
     # user = None
     user = User.objects(id='1').first()
-    print(user)
+
+
     # check if user has a book that is not finished
     unfinished_book = [book for book in user['books'] if book['is_finished'] == False]
 
@@ -213,8 +214,46 @@ async def test(choice_text: str | None = None):
     # if there is a book check where in the storyline it is
         unfinished_book['storyline'].sort(key=lambda x: x['order'], reverse=True)
         storyline = unfinished_book['storyline'][0]
+#   THERE IS UNFINISHED BOOK
+    if storyline['type'] == 'choice':
+        for choice in storyline['choices']:
+            if choice['text'] == choice_text:
+                choice['is_chosen'] = True
+        #  Generate Nice picture
+        user.save()
+
+        # send request to chatgpt with the forward looking storyline
+    order = storyline['order'] + 1 
+    story = [story for story in story_builder if story['order'] == order][0]
+
+    response = chatGpt(f"{story['prequery']}{story['postquery']}")
+    response = json.loads(response)
+    if story_builder[order]['return_type'] == 'text':
+        unfinished_book['storyline'].append(Prompt(
+                order = order,
+                prompt = "",
+                type =  'text',
+                image_url = "",
+                text = response
+        ))
+        user.save()
+        return response
+    elif story_builder[order]['return_type'] == 'choice':
+        unfinished_book['storyline'].append(Prompt(
+                order = order,
+                prompt = "",
+                type =  'choices',
+                image_url = "",
+                choices = json.loads(response)
+        ))
+        user.save()
+
+        return json.loads(response)
+    # else:
+    #     return "Something went wrong"
     else:
-    
+        # NEW BOOK  CREATION
+
         # if there is no book create one
         story = [story for story in story_builder if story['order'] == 0][0]
         response = chatGpt(story['prequery'] )
@@ -306,44 +345,6 @@ async def test():
 
 
 
-
-#   THERE IS UNFINISHED BOOK
-    if storyline['type'] == 'choice':
-        for choice in storyline['choices']:
-            if choice['text'] == choice_text:
-                # UPDATE IN DB TO TRUE
-                choice['is_chosen'] = True
-                user.save()
-
-
-        # send request to chatgpt with the forward looking storyline
-    order = storyline['order'] + 1 
-    story = [story for story in story_builder if story['order'] == order][0]
-
-    response = chatGpt(f"{story['prequery']}{story['postquery']}")
-    if story_builder[order]['return_type'] == 'text':
-        unfinished_book['storyline'].append(Prompt(
-                order = order,
-                prompt = "",
-                type =  'text',
-                image_url = "",
-                text = response
-        ))
-        user.save()
-        return response
-    elif story_builder[order]['return_type'] == 'choice':
-        unfinished_book['storyline'].append(Prompt(
-                order = order,
-                prompt = "",
-                type =  'choices',
-                image_url = "",
-                choices = json.loads(response)
-        ))
-        user.save()
-
-        return json.loads(response)
-    else:
-        return "Something went wrong"
 
 
         
