@@ -1,17 +1,7 @@
 import Link from 'next/link';
 import AnimatedGradient from '@/components/AnimatedGradient';
-import Choice from '@/components/Choice';
-import { useState } from 'react'
 
 function MenuItem({ href, title }: { href: string; title: string }) {
-
-	const [style, setStyle] = useState()
-	const [types, setTypes] = useState()
-
-	let categoryStyle = {
-		borderRadius: '20px'
-	}
-
 
 
 	return (
@@ -43,19 +33,8 @@ function MenuItem({ href, title }: { href: string; title: string }) {
 
 export default function Home() {
 
-	const [active, setActive] = useState(false)
-
-	function handleClick() {
-		setActive(current => !current)
-		console.log('Clicked')
-	}
-
-
-
-
-
 	return (
-		<main className="h-screen w-full flex flex-col mx-auto p-60 relative ">
+		<main className="h-screen w-full flex flex-col mx-auto p-60 relative overflow-hidden">
 			<AnimatedGradient
 				bottom={-100}
 				right={-100}
@@ -73,35 +52,6 @@ export default function Home() {
 				<MenuItem title="Start" href="/story/book_id/0" />
 				<MenuItem title="Bookshelf" href="/bookshelf" />
 				<MenuItem title="About" href="/about" />
-
-				{/* <div className='flex content-evenly'>
-
-					<Choice
-						type='category'
-						onClick={handleClick}
-						image='category.png'
-						text='hello'
-					/>
-					<Choice
-						type='action'
-						onClick={handleClick}
-						image='action.png'
-						text='hallo'
-					/>
-					<Choice
-						type='hero'
-						onClick={handleClick}
-						image='hero.png'
-						text='hallo'
-					/>
-					<Choice
-						type='setting'
-						onClick={handleClick}
-						image='setting.png'
-						text='hallo'
-					/>
-				</div> */}
-
 
 				<footer className='pt-60 '>
 					<p className=' text-lg tracking-wide'>Team Code Vision submission</p>

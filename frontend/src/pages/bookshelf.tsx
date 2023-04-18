@@ -4,9 +4,10 @@ import BackButton from '@/components/BackButton';
 export default function Bookshelf() {
 	return (
 		<div className='w-full '>
-			<div className='flex items-center  w-full text-center'>
+			<div className='flex p-10 items-center w-full justify-between'>
 				<BackButton />
-				<h1 className='text-5xl'>Bookshelf</h1>
+				<h1 className='text-5xl self-center'>Bookshelf</h1>
+				<div></div>
 			</div>
 
 			<div className='w-full mx-auto flex-col items-center content-center'>
