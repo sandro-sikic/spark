@@ -1,4 +1,5 @@
 import BackButton from '@/components/BackButton';
+import AnimatedGradient from '@/components/AnimatedGradient';
 
 function Bro({
 	name,
@@ -14,15 +15,19 @@ function Bro({
 	linkedin: string;
 }) {
 	return (
-		<div>
-			<img src={image} alt={name} />
+		<div className="m-10 md:m-0 flex flex-col">
+			<img
+				className="h-44 w-44 rounded-full shadow-2xl flex-shrink-0"
+				src={image}
+				alt={name}
+			/>
 
-			<h3>{name}</h3>
+			<h3 className="text-2xl tracking-wider mt-4">{name}</h3>
 
-			<p>{role}</p>
+			<p className="text-sm tracking-wider mt-1">{role}</p>
 
-			<div className="flex">
-				<a href={github}>
+			<div className="flex mt-1 items-center">
+				<a className="mr-3" href={github}>
 					<svg
 						width="21"
 						height="20"
@@ -58,44 +63,53 @@ function Bro({
 
 export default function AboutUs() {
 	return (
-		<main className="min-h-screen">
-			<BackButton />
+		<>
+			<AnimatedGradient right={0} fromColor="#234463" toColor="#522363" />
 
-			<h1>About us</h1>
+			<AnimatedGradient bottom={0} fromColor="#522363" toColor="#234463" />
+			<main className="px-3 relative min-h-screen mx-auto max-w-screen-lg">
+				<header className="relative flex pt-10 items-center">
+					<BackButton className="z-10 p-2" />
 
-			<h2>Team Code Vision</h2>
-
-			<div>
-				<Bro
-					name="Sandro Šikić"
-					image="https://avatars.githubusercontent.com/u/38315243?v=4"
-					role="Team Lead"
-					github=""
-					linkedin=""
-				/>
-				<Bro
-					name="Ronald Suplina"
-					image="https://avatars.githubusercontent.com/u/29492908?v=4"
-					role="Associate Solutions Engineer"
-					github=""
-					linkedin=""
-				/>
-				<Bro
-					name="Luka Balta"
-					image="https://avatars.githubusercontent.com/u/95940744?v=4"
-					role="Frontend developer"
-					github=""
-					linkedin=""
-				/>
-			</div>
-			<footer>
-				<p>
-					hackathlon submission @{' '}
-					<a href="https://lablab.ai/event/stable-diffusion-ai-hackathon">
-						lablab.ai
-					</a>
-				</p>
-			</footer>
-		</main>
+					<h1 className="absolute w-full text-4xl flex-grow text-center">
+						About us
+					</h1>
+				</header>
+				<div className="mx-auto max-w-screen-md w-full pt-44">
+					<h2 className="text-2xl mb-5">Team Code Vision</h2>
+					<section className="flex flex-grow flex-wrap items-center md:justify-between justify-center">
+						<Bro
+							name="Sandro Šikić"
+							image="https://avatars.githubusercontent.com/u/38315243?v=4"
+							role="Team Lead"
+							github=""
+							linkedin=""
+						/>
+						<Bro
+							name="Ronald Suplina"
+							image="https://avatars.githubusercontent.com/u/29492908?v=4"
+							role="Solutions Engineer"
+							github=""
+							linkedin=""
+						/>
+						<Bro
+							name="Luka Balta"
+							image="https://avatars.githubusercontent.com/u/95940744?v=4"
+							role="Frontend developer"
+							github=""
+							linkedin=""
+						/>
+					</section>
+					<footer className="pt-36">
+						<p>
+							hackathon submission @{' '}
+							<a href="https://lablab.ai/event/stable-diffusion-ai-hackathon">
+								lablab.ai
+							</a>
+						</p>
+					</footer>
+				</div>
+			</main>
+		</>
 	);
 }

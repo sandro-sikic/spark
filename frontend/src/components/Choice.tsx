@@ -2,6 +2,7 @@ import React from 'react';
 
 interface ChoiceProps {
 	text: string;
+	selected: string;
 	image: string;
 	onClick: () => void;
 	type: string;
@@ -13,6 +14,7 @@ type StylesTypes = {
 
 export default function Choice({
 	text,
+	selected,
 	image,
 	onClick,
 	type,
@@ -38,10 +40,9 @@ export default function Choice({
 
 	if (type === 'category') {
 		return (
-			<button onClick={onClick}>
-				<svg className='mb-4 w-32' viewBox="0 0 152 152">
+			<button className='pr-40 pb-20' onClick={onClick}>
+				<svg className=' w-40' viewBox="0 0 152 152">
 					<defs >
-
 						<clipPath id='category'>
 							<path d="M0 76C0 14.44 14.44 0 76 0C137.56 0 152 14.44 152 76C152 137.56 137.56 152 76 152C14.44 152 0 137.56 0 76Z" fill="" />
 						</clipPath>
@@ -55,7 +56,7 @@ export default function Choice({
 
 	return (
 		<button onClick={onClick}>
-			<img className='mb-4' src={image} style={styles[type]} alt="" />
+			<img className='w-40 h-40' src={image} style={styles[type]} alt="" />
 			<span className='text-2xl'>{text}</span>
 		</button>
 	);
