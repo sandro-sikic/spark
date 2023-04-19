@@ -1,47 +1,31 @@
 import Book from '@/components/Book';
 import BackButton from '@/components/BackButton';
+import AnimatedGradient from '@/components/AnimatedGradient';
 
 export default function Bookshelf() {
 	return (
-		<div className='w-full '>
-			<div className='flex p-10 items-center w-full justify-between'>
-				<BackButton />
-				<h1 className='text-5xl self-center'>Bookshelf</h1>
-				<div></div>
-			</div>
+		<>
+			<AnimatedGradient fromColor="#234463" toColor="#522363" />
 
-			<div className='w-full mx-auto flex-col items-center content-center'>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
-				<Book
-					title="The adventures of Lily and Leo"
-					genre='Fantasy'
-				/>
+			<main className="px-3 relative min-h-screen mx-auto max-w-screen-lg">
+				<header className="relative flex pt-10 items-center">
+					<BackButton className="z-10 p-2" />
 
+					<h1 className="absolute w-full text-4xl flex-grow text-center">
+						Bookshelf
+					</h1>
+				</header>
 
-			</div>
-		</div>
+				<div className="mx-auto max-w-screen-md w-full pt-44">
+					<div className="flex items-center">
+						<Book image="https://edit.org/images/cat/book-covers-big-2019101610.jpg" />
+						<div className="flex-col ml-12">
+							<h1 className="text-3xl">The adventures of Lily and Leo</h1>
+							<h2>Fantasy</h2>
+						</div>
+					</div>
+				</div>
+			</main>
+		</>
 	);
 }

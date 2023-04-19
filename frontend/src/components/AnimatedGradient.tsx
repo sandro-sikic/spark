@@ -1,10 +1,10 @@
 export default function AnimatedGradient({
 	fromColor,
 	toColor,
-	left,
-	right,
-	top,
-	bottom,
+	left = null,
+	right = null,
+	top = null,
+	bottom = null,
 }: {
 	fromColor: string;
 	toColor: string;
@@ -13,7 +13,10 @@ export default function AnimatedGradient({
 	top?: number | null;
 	left?: number | null;
 }) {
-	const animationDurationSeconds = 10;
+	const animationDurationSeconds = 20;
+
+	const width = 1500;
+	const height = 1500;
 
 	return (
 		<>
@@ -45,39 +48,41 @@ export default function AnimatedGradient({
 
 			<div
 				style={{
-					position: 'absolute',
-					zIndex: '0',
-					height: '230vh',
-					width: '260vh',
+					position: 'fixed',
+					zIndex: '-1',
+					height: `${height}px`,
+					width: `${width}px`,
 					background: `radial-gradient(
 							50% 50% at 50% 50%,
 							${fromColor} 0%,
 							rgba(0, 0, 0, 0) 100%
 						)`,
-					right: right + 'rem',
-					left: left + 'rem',
-					top: top + 'rem',
-					bottom: bottom + 'rem',
+					left: top === null ? undefined : top + 'rem',
+					right: right === null ? undefined : `calc(${right}rem - ${width}px)`,
+					top: top === null ? undefined : top + 'rem',
+					bottom: bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
 					animation: `animatedGradientAnimationFrom ${animationDurationSeconds}s ease-in-out infinite`,
+					transform: 'translate(-50%, -50%)',
 				}}
 			/>
 
 			<div
 				style={{
-					position: 'absolute',
-					zIndex: '0',
-					height: '230vh',
-					width: '260vh',
+					position: 'fixed',
+					zIndex: '-1',
+					height: `${height}px`,
+					width: `${width}px`,
 					background: `radial-gradient(
 							50% 50% at 50% 50%,
 							${toColor} 0%,
 							rgba(0, 0, 0, 0) 100%
 						)`,
-					right: right + 'rem',
-					left: left + 'rem',
-					top: top + 'rem',
-					bottom: bottom + 'rem',
+					left: top === null ? undefined : top + 'rem',
+					right: right === null ? undefined : `calc(${right}rem - ${width}px)`,
+					top: top === null ? undefined : top + 'rem',
+					bottom: bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
 					animation: `animatedGradientAnimationTo ${animationDurationSeconds}s ease-in-out infinite`,
+					transform: 'translate(-50%, -50%)',
 				}}
 			/>
 		</>

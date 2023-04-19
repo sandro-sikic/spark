@@ -1,16 +1,16 @@
 import Link from 'next/link';
 import AnimatedGradient from '@/components/AnimatedGradient';
+import ConnectedDots from '@/components/ConnectedDots';
+import { useState } from 'react';
 
 function MenuItem({ href, title }: { href: string; title: string }) {
-
-
 	return (
 		<Link
 			href={href}
 			className="group rounded-lg border border-transparent px-6 py-4  pl-0"
 			rel="noopener noreferrer"
 		>
-			<h2 className=" flex text-5xl font-normal font-light p-2 pl-0">
+			<h2 className=" flex text-5xl font-light p-2 pl-0">
 				{`${title} `}
 				<span className="ml-3 flex items-center justify-center transition-transform opacity-0 group-hover:translate-x-2 group-hover:opacity-100 motion-reduce:transform-none">
 					<svg
@@ -32,35 +32,60 @@ function MenuItem({ href, title }: { href: string; title: string }) {
 }
 
 export default function Home() {
+	const [active, setActive] = useState(false);
+
+	function handleClick() {
+		setActive((current) => !current);
+		console.log('Clicked');
+	}
 
 	return (
-		<main className="h-screen w-full flex flex-col mx-auto p-60 relative overflow-hidden">
-			<AnimatedGradient
-				bottom={-100}
-				right={-100}
-				fromColor="#234463"
-				toColor="#522363"
-			/>
-			<div className='relative z-1'>
+		<>
+			<ConnectedDots />
 
-				<h1 className='text-8xl font-mono font-semibold tracking-widest pb-4'>Spark</h1>
-				<p className=' max-w-sm text-base pb-28'>
-					Create your own adventure using Ai to generate images and test that
-					inspire you and match your style
-				</p>
+			<main className="relative flex flex-col justify-center px-3 min-h-screen mx-auto max-w-screen-lg">
+				<div className="flex min-h-[80vh]">
+					<div className="flex flex-col justify-between flex-grow gap-10">
+						<AnimatedGradient
+							bottom={0}
+							right={0}
+							fromColor="#234463"
+							toColor="#522363"
+						/>
 
-				<MenuItem title="Start" href="/story/book_id/0" />
-				<MenuItem title="Bookshelf" href="/bookshelf" />
-				<MenuItem title="About" href="/about" />
+						<div>
+							<h1 className="text-8xl font-semibold tracking-[.245em]">
+								Spark
+							</h1>
 
-				<footer className='pt-60 '>
-					<p className=' text-lg tracking-wide'>Team Code Vision submission</p>
-					<p className=' text-sm'>
-						<a className='' href="https://lablab.ai">lablab.ai</a> stable diffusion 2.0
-						hackatlon
-					</p>
-				</footer>
-			</div>
-		</main>
+							<p className="max-w-sm text-base mt-4">
+								Create your own adventure using Ai to generate
+								<br /> images and test that inspire you and match <br />
+								your style
+							</p>
+						</div>
+
+						<div>
+							<MenuItem title="Start" href="/story/book_id/0" />
+							<MenuItem title="Bookshelf" href="/bookshelf" />
+							<MenuItem title="About" href="/about" />
+						</div>
+
+						<footer>
+							<p className="text-lg tracking-wide font-light">
+								Team Code Vision submission
+							</p>
+
+							<p className="text-sm font-light">
+								<a className="" href="https://lablab.ai">
+									lablab.ai
+								</a>{' '}
+								stable diffusion 2.0 hackatlon
+							</p>
+						</footer>
+					</div>
+				</div>
+			</main>
+		</>
 	);
 }

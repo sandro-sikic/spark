@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
 
-export default function BackButton() {
+export default function BackButton({ className }: { className: string }) {
 	const router = useRouter();
 
 	return (
 		<button
+			className={className}
 			onClick={() => {
 				router.back();
 			}}
