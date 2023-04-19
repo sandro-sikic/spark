@@ -175,7 +175,7 @@ story_builder = [
         "order": 2,
         "return_type": "choice",
         "prequery": "",
-        "postquery": " based on the provided text return 6 possible results in strict json format with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
+        "postquery": " generate a list of 6 common story places in strict  strict json format with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
     },
     {
         "order": 3,
@@ -201,8 +201,7 @@ story_builder = [
 
 @router.get("/openapi/test" ,  tags=["chat-gpt"])
 async def test(choice_text: str | None = None):
-    # get user from database
-    # user = None
+
     user = User.objects(id='1').first()
 
 
@@ -215,50 +214,57 @@ async def test(choice_text: str | None = None):
         unfinished_book['storyline'].sort(key=lambda x: x['order'], reverse=True)
         storyline = unfinished_book['storyline'][0]
 #   THERE IS UNFINISHED BOOK
-    if storyline['type'] == 'choice':
-        for choice in storyline['choices']:
-            if choice['text'] == choice_text:
-                choice['is_chosen'] = True
-        #  Generate Nice picture
-        user.save()
+        if storyline['type'] == 'choice':
+            for choice in storyline['choices']:
+                if choice['text'] == choice_text:
+                    choice['is_chosen'] = True
+       
+            user.save()
 
-        # send request to chatgpt with the forward looking storyline
-    order = storyline['order'] + 1 
-    story = [story for story in story_builder if story['order'] == order][0]
+            # send request to chatgpt with the forward looking storyline
+        order = storyline['order'] + 1 
+        story = [story for story in story_builder if story['order'] == order][0]
+# THIS WILL SAVE 1ST PART OF TEXT TO ARRAY 
+        response = chatGpt(f"{story['prequery']}{story['postquery']}")
+        if story_builder[order]['return_type'] == 'text':
+            unfinished_book['storyline'].append(Prompt(
+                    order = order,
+                    prompt = "",
+                    type =  'text',
+                    image_url = "",
+                    text = response
+            ))
+            user.save()
+# RETURN TO USER LIST OF PLACES TO CHOOSE WHERE HERO WILL GO 
+# PLS HELP
+# PLS HELP
+# PLS HELP
+# NEZNAM KOJI KURAC DA NAPRAVIM TU :( 
+# ZNACI MORA VRATIT USER-u  onaj sljedecih 6 slicica za one lokacije temple, forest ... ja to mogu hardcodat al nije rijesenje 
+# I onda treba logika da story order + 1 I guess nezz ... 
 
-    response = chatGpt(f"{story['prequery']}{story['postquery']}")
-    response = json.loads(response)
-    if story_builder[order]['return_type'] == 'text':
-        unfinished_book['storyline'].append(Prompt(
-                order = order,
-                prompt = "",
-                type =  'text',
-                image_url = "",
-                text = response
-        ))
-        user.save()
-        return response
-    elif story_builder[order]['return_type'] == 'choice':
-        unfinished_book['storyline'].append(Prompt(
-                order = order,
-                prompt = "",
-                type =  'choices',
-                image_url = "",
-                choices = json.loads(response)
-        ))
-        user.save()
+            # order = storyline['order'] + 1 
 
-        return json.loads(response)
-    # else:
-    #     return "Something went wrong"
+            # response = chatGpt(f"{story['prequery']}{story['postquery']}")
+
+            return response
+        elif story_builder[order]['return_type'] == 'choice':
+            unfinished_book['storyline'].append(Prompt(
+                    order = order,
+                    prompt = "",
+                    type =  'choices',
+                    image_url = "",
+                    choices = json.loads(response)
+            ))
+            user.save()
+
+            return json.loads(response)
     else:
-        # NEW BOOK  CREATION
-
-        # if there is no book create one
+# IF THERE IS NO BOOK -
         story = [story for story in story_builder if story['order'] == 0][0]
         response = chatGpt(story['prequery'] )
         choices = json.loads(response) if story['return_type'] == 'choice' else []
-        # GENERATE BOOK OBJECT
+# INITIALIZE BOOK OBJECT
         new_book = Book(
             id=f"book{user.id}",
             name="",
@@ -274,14 +280,16 @@ async def test(choice_text: str | None = None):
         )
         user.books.append(new_book)
         user.save()
-        # GIVE BACK 1st 6 items  for users to chose  "CATEGORIES'
+# GIVE BACK 1st 6 items  for users to chose  "CATEGORIES'
+# PREPARE 1ST PART OF RESPONSE 
         response = json.loads(response)
-        # return response
+
         
 # STABLE DIFFUSER PART
 
         image_enhancer = 'cat, in a plain background,modern,stylized,futuristic'
         image_list = []
+# MAKE 6 IMAGES AND APPEND THEM TO RESPONSE 
         for i, item in enumerate(response):
             stable_diff_prompt_text = item['text'] + item['description'] + image_enhancer
             payload = image_properties(stable_diff_prompt_text)
@@ -304,6 +312,12 @@ async def test(choice_text: str | None = None):
 
         
         return choices
+
+
+
+
+
+
 
 
 
