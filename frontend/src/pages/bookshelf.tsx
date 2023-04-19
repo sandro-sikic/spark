@@ -19,7 +19,7 @@ export default function Bookshelf() {
 				<div className="mx-auto max-w-screen-md w-full pt-44">
 					<div className="flex items-center">
 						<Book image="https://edit.org/images/cat/book-covers-big-2019101610.jpg" />
-						<div className="flex-col ml-12">
+						<div className="flex-col ml-6 sm:ml-12">
 							<h1 className="text-3xl">The adventures of Lily and Leo</h1>
 							<h2>Fantasy</h2>
 						</div>

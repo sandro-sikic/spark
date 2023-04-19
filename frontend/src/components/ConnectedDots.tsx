@@ -33,13 +33,13 @@ export default function ConnectedDots() {
 			ctx.globalCompositeOperation = 'lighter';
 
 			for (var i = 0, x = stars.length; i < x; i++) {
-				var s = stars[i];
+				var star = stars[i];
 
-				ctx.fillStyle = '#c6c6c6';
+				ctx.fillStyle = '#424242';
 				ctx.beginPath();
-				ctx.arc(s.x, s.y, s.radius, 0, 2 * Math.PI);
+				ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
 				ctx.fill();
-				ctx.fillStyle = '#c6c6c6';
+				ctx.fillStyle = '#424242';
 				ctx.stroke();
 			}
 
@@ -50,13 +50,12 @@ export default function ConnectedDots() {
 				for (var j = 0, x = stars.length; j < x; j++) {
 					var starII = stars[j];
 					if (distance(starI, starII) < 150) {
-						// ctx.globalAlpha = (1 / 150) * distance(starI, starII).toFixed(1);
 						ctx.lineTo(starII.x, starII.y);
 					}
 				}
 			}
 
-			ctx.lineWidth = 0.05;
+			ctx.lineWidth = 0.01;
 			ctx.strokeStyle = '#fff';
 			ctx.stroke();
 		}
@@ -95,5 +94,10 @@ export default function ConnectedDots() {
 		tick();
 	}, []);
 
-	return <canvas className="min-h-screen w-full fixed" ref={canvasRef} />;
+	return (
+		<canvas
+			className="min-h-screen w-full fixed hidden sm:block"
+			ref={canvasRef}
+		/>
+	);
 }

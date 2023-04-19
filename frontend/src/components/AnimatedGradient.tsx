@@ -47,6 +47,7 @@ export default function AnimatedGradient({
 			`}</style>
 
 			<div
+				className="sm:hidden"
 				style={{
 					position: 'fixed',
 					zIndex: '-1',
@@ -60,13 +61,36 @@ export default function AnimatedGradient({
 					left: top === null ? undefined : top + 'rem',
 					right: right === null ? undefined : `calc(${right}rem - ${width}px)`,
 					top: top === null ? undefined : top + 'rem',
-					bottom: bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
+					bottom:
+						bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
+					transform: 'translate(-50%, -50%)',
+				}}
+			/>
+
+			<div
+				className="hidden md:block"
+				style={{
+					position: 'fixed',
+					zIndex: '-1',
+					height: `${height}px`,
+					width: `${width}px`,
+					background: `radial-gradient(
+							50% 50% at 50% 50%,
+							${fromColor} 0%,
+							rgba(0, 0, 0, 0) 100%
+						)`,
+					left: top === null ? undefined : top + 'rem',
+					right: right === null ? undefined : `calc(${right}rem - ${width}px)`,
+					top: top === null ? undefined : top + 'rem',
+					bottom:
+						bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
 					animation: `animatedGradientAnimationFrom ${animationDurationSeconds}s ease-in-out infinite`,
 					transform: 'translate(-50%, -50%)',
 				}}
 			/>
 
 			<div
+				className="hidden md:block"
 				style={{
 					position: 'fixed',
 					zIndex: '-1',
@@ -80,7 +104,8 @@ export default function AnimatedGradient({
 					left: top === null ? undefined : top + 'rem',
 					right: right === null ? undefined : `calc(${right}rem - ${width}px)`,
 					top: top === null ? undefined : top + 'rem',
-					bottom: bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
+					bottom:
+						bottom === null ? undefined : `calc(${bottom}rem - ${height}px)`,
 					animation: `animatedGradientAnimationTo ${animationDurationSeconds}s ease-in-out infinite`,
 					transform: 'translate(-50%, -50%)',
 				}}
