@@ -68,7 +68,7 @@ export default function AnimatedGradient({
 			/>
 
 			<div
-				className="hidden md:block"
+				className="hidden sm:block"
 				style={{
 					position: 'fixed',
 					zIndex: '-1',
@@ -90,7 +90,7 @@ export default function AnimatedGradient({
 			/>
 
 			<div
-				className="hidden md:block"
+				className="hidden sm:block"
 				style={{
 					position: 'fixed',
 					zIndex: '-1',
