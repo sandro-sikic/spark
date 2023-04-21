@@ -41,21 +41,20 @@ export default function Home() {
 		<>
 			<ConnectedDots />
 
+			<AnimatedGradient
+				bottom={0}
+				right={0}
+				fromColor="#234463"
+				toColor="#522363"
+			/>
 			<main
 				style={{
 					height: '100svh',
 				}}
-				className="relative flex flex-col justify-center px-3 mx-auto max-w-screen-lg"
+				className="z-10 relative flex flex-col justify-center px-3 mx-auto max-w-screen-lg"
 			>
 				<div className="flex min-h-[80vh]">
 					<div className="flex flex-col justify-between flex-grow gap-10">
-						<AnimatedGradient
-							bottom={0}
-							right={0}
-							fromColor="#234463"
-							toColor="#522363"
-						/>
-
 						<div>
 							<h1 className="text-7xl sm:text-8xl font-semibold tracking-[.245em]">
 								Spark
@@ -80,7 +79,7 @@ export default function Home() {
 							</p>
 
 							<p className="text-xs sm:text-sm font-light">
-								<a className="" href="https://lablab.ai">
+								<a className="" href="https://lablab.ai" target="_blank">
 									lablab.ai
 								</a>{' '}
 								stable diffusion 2.0 hackatlon

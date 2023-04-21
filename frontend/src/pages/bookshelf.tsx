@@ -7,7 +7,7 @@ export default function Bookshelf() {
 		<>
 			<AnimatedGradient fromColor="#234463" toColor="#522363" />
 
-			<main className="px-3 relative min-h-screen mx-auto max-w-screen-lg">
+			<main className="z-10 px-3 relative min-h-screen mx-auto max-w-screen-lg">
 				<header className="relative flex pt-10 items-center">
 					<BackButton className="z-10 p-2" />
 

@@ -1,8 +1,8 @@
 export default function AnimatedImage({
-	url,
+	src,
 	className,
 }: {
-	url: string;
+	src: string;
 	className?: string;
 }) {
 	function getRandomInt(min: number, max: number) {
@@ -85,9 +85,9 @@ export default function AnimatedImage({
 						width: '100%',
 						height: '100%',
 						objectFit: 'cover',
-						animation: 'animate 10s, animate1 50s ease-in-out 10s infinite',
+						animation: 'animate 10s, animate1 100s ease-in-out 10s infinite',
 					}}
-					src={url}
+					src={src}
 				/>
 			</div>
 		</>

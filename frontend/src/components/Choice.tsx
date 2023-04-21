@@ -33,7 +33,7 @@ export default function Choice({
 		},
 	};
 
-	if (type === 'genre') {
+	if (type === 'category') {
 		return (
 			<button
 				className={`flex flex-col items-center flex-shrink-0 active:scale-105 hover:scale-110  transition-transform ${className}`}

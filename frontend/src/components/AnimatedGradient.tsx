@@ -50,7 +50,7 @@ export default function AnimatedGradient({
 				className="sm:hidden"
 				style={{
 					position: 'fixed',
-					zIndex: '-1',
+					zIndex: 0,
 					height: `${height}px`,
 					width: `${width}px`,
 					background: `radial-gradient(
@@ -71,7 +71,7 @@ export default function AnimatedGradient({
 				className="hidden sm:block"
 				style={{
 					position: 'fixed',
-					zIndex: '-1',
+					zIndex: 0,
 					height: `${height}px`,
 					width: `${width}px`,
 					background: `radial-gradient(
@@ -93,7 +93,7 @@ export default function AnimatedGradient({
 				className="hidden sm:block"
 				style={{
 					position: 'fixed',
-					zIndex: '-1',
+					zIndex: 0,
 					height: `${height}px`,
 					width: `${width}px`,
 					background: `radial-gradient(

@@ -27,7 +27,11 @@ function Bro({
 			<p className="text-sm tracking-wider mt-1">{role}</p>
 
 			<div className="flex mt-1 items-center">
-				<a className="mr-3" href={github}>
+				<a
+					className="mr-3 hover:scale-125 transition-transform active:scale-105"
+					href={github}
+					target="_blank"
+				>
 					<svg
 						width="21"
 						height="20"
@@ -42,7 +46,11 @@ function Bro({
 					</svg>
 				</a>
 
-				<a href={linkedin}>
+				<a
+					className="mr-3 hover:scale-125 transition-transform active:scale-105"
+					href={linkedin}
+					target="_blank"
+				>
 					<svg
 						width="19"
 						height="18"
@@ -67,7 +75,8 @@ export default function AboutUs() {
 			<AnimatedGradient right={0} fromColor="#234463" toColor="#522363" />
 
 			<AnimatedGradient bottom={0} fromColor="#522363" toColor="#234463" />
-			<main className="px-3 relative min-h-screen mx-auto max-w-screen-lg">
+
+			<main className="z-10 px-3 relative min-h-screen mx-auto max-w-screen-lg">
 				<header className="relative flex pt-10 items-center">
 					<BackButton className="z-10 p-2" />
 
@@ -82,28 +91,31 @@ export default function AboutUs() {
 							name="Sandro Šikić"
 							image="https://avatars.githubusercontent.com/u/38315243?v=4"
 							role="Team Lead"
-							github=""
-							linkedin=""
+							github="https://github.com/sandro-sikic"
+							linkedin="https://www.linkedin.com/in/sandro-%C5%A1iki%C4%87/"
 						/>
 						<Bro
 							name="Ronald Suplina"
 							image="https://avatars.githubusercontent.com/u/29492908?v=4"
 							role="Solutions Engineer"
-							github=""
-							linkedin=""
+							github="https://github.com/Vucko95"
+							linkedin="https://www.linkedin.com/in/ronaldsuplina/"
 						/>
 						<Bro
 							name="Luka Balta"
 							image="https://avatars.githubusercontent.com/u/95940744?v=4"
 							role="Frontend developer"
-							github=""
-							linkedin=""
+							github="https://github.com/LukaBalta"
+							linkedin="https://www.linkedin.com/in/luka-balta-a36a67241/"
 						/>
 					</section>
 					<footer className="pt-36">
 						<p>
 							hackathon submission @{' '}
-							<a href="https://lablab.ai/event/stable-diffusion-ai-hackathon">
+							<a
+								href="https://lablab.ai/event/stable-diffusion-ai-hackathon"
+								target="_blank"
+							>
 								lablab.ai
 							</a>
 						</p>
