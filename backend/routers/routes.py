@@ -16,60 +16,97 @@ story_builder = [
     {
         "order": 0,
         "return_type": "choice",
-        "prequery": "name 6 story genres that would make a great story.",
-        "postquery": "you should return your response in strict json format with keys: text, type, scene_description, description",
+        "prequery": "name 6 story genres that would make a great story",
+        "postquery": "you should return your response in strict json array format with keys: text, type, scene_description, description",
     },
     {
         "order": 1,
         "return_type": "text",
-        "prequery": "",
+        "prequery": "generate short start of the story without mentioning any places and main characters in genre of ",
         "postquery": "you should return your response in strict json format with keys: text, scene_description",
     },
     {
         "order": 2,
         "return_type": "choice",
-        "prequery": "name 6 story genres that would make a great story.",
-        "postquery": "you should return your response in strict json format with keys: text, type, scene_description, description",
+        "prequery": "name 6 places where a story could take place based on the following start of the story: ",
+        "postquery": ".you should return your response in strict json array format with keys: text, type, scene_description, description",
     },
     {
         "order": 3,
         "return_type": "text",
-        "prequery": "",
+        "prequery": "continue the story by describing the location in detail:",
         "postquery": "you should return your response in strict json format with keys: text, scene_description",
     },
     {
         "order": 4,
         "return_type": "choice",
-        "prequery": "name 6 story genres that would make a great story.",
-        "postquery": "you should return your response in strict json format with keys: text, type, scene_description, description",
+        "prequery": "name 6 heroes that fit the location and could be in the story based on the following text:",
+        "postquery": ".you should return your response in strict json array format with keys: text, type, scene_description, description",
     },
     {
-        "order": 5,
+        "order": 7,
         "return_type": "text",
-        "prequery": "",
+        "prequery": "continue the story by describing the hero in detail:",
+        "postquery": "create a plot twist where an action is needed. you should return your response in strict json format with keys: text, scene_description",
+    },
+    {
+        "order": 6,
+        "return_type": "choice",
+        "prequery": "create 6 actions that could happen in the story based on the following text:",
+        "postquery": ".you should return your response in strict json array format with keys: text, type, scene_description, description",
+    },
+    {
+        "order": 7,
+        "return_type": "text",
+        "prequery": "continue the story by describing the action in detail:",
         "postquery": "you should return your response in strict json format with keys: text, scene_description",
+    },
+    {
+        "order": 8,
+        "return_type": "choice",
+        "prequery": "create 6 story conclusions that would satisfy the following text:",
+        "postquery": ".you should return your response in strict json array format with keys: text, type, scene_description, description",
+    },
+    {
+        "order": 9,
+        "return_type": "text",
+        "prequery": "continue the story:",
+        "postquery": " but leave us wondering what could happen next. you should return your response in strict json format with keys: text, scene_description",
     }
 ]
 
+enhancers = {
+    'genre': 'future category , realism, octane render, , trending on artstation,  unreal engine, hyper detailed, photo - realistic maximum detail, volumetric light, realistic matte painting, hyper photorealistic, trending on artstation, ultra - detailed ',
+    "location": "location , realism, octane render, , trending on artstation,  unreal engine, hyper detailed, photo - realistic maximum detail, volumetric light, realistic matte painting, hyper photorealistic, trending on artstation, ultra - detailed ",
+    "hero": "anthro, very cute children film character, disney pixar zootopia character concept artwork, 3d concept, detailed fur, high detail iconic character for upcoming film, trending on artstation, character design, 3d artistic render, highly detailed, octane, blender, cartoon, shadows, lighting ",
+    "action":  "walk human action , ultra realistic, , highly detailed, photorealistic, octane render, unreal engine, sharp focus, volumetric lighting unreal engine" 
+        
+}
 
-def chatGpt(text):
+
+async def chatGpt(text):
     data = {
         "model": "gpt-3.5-turbo",
-        "messages": [{"role": "assistant", "content": text }],
-        "temperature": 0.5,
-        "top_p": 0.1,
+        "messages": [{"role": "user", "content": text }],
+        "temperature": 1,
+        "top_p": 1,
+    	"stream": False,
+        "presence_penalty": 0,
+        "frequency_penalty": 0
     }
 
-    try:
-        response = requests.post(
-            'https://api.openai.com/v1/chat/completions',
-            headers=openapi_base_headers, 
-            data=json.dumps(data)
-        ).json()
+    try: 
+        async with httpx.AsyncClient(timeout=40.0) as client:
+            response = await client.post(
+                url='https://api.openai.com/v1/chat/completions',
+                headers=openapi_base_headers, 
+                json=data
+            )
 
-        return json.loads(response['choices'][0]['message']['content'])
+        return json.loads(response.json()['choices'][0]['message']['content'])
+
     except Exception as e:
-        raise Exception(f'Something went wrong with the chatGPT API: {response}')
+        raise Exception(f'Something went wrong with the chatGPT API:')
 
 
 async def create_storyline(choice_text, book):
@@ -99,9 +136,9 @@ async def create_storyline(choice_text, book):
     story = [story for story in story_builder if story['order'] == order][0]
     
     if selected_choice:
-        response = chatGpt(f"{story['prequery']}{choice['description']}{story['postquery']}")     
+        response = await chatGpt(f"{story['prequery']}{choice['description']}{story['postquery']}")     
     else:
-        response = chatGpt(f"{story['prequery']}{storyline['text']}{story['postquery']}")
+        response = await chatGpt(f"{story['prequery']}{storyline['text']}{story['postquery']}")
     
     if story['return_type'] == 'text':
         prompt = {
@@ -163,15 +200,36 @@ async def generate_image(prompt):
 
 
 async def inject_images(prompt):
-    enhancer = 'detailed, high detail, modern,stylized,futuristic'
-
-    image_list = []
     for item in prompt['choices']:
-        image_name = await generate_image(item['text'] + item['description'] + enhancer)
+        enhancer = 'environmental picture, octane render, 8k, concept art, soft light, hdri, smooth, sharp focus, unreal engine, hyper detailed, photo - realistic maximum detail, volumetric light,  hyper photorealistic, trending on artstation, realistic'
+
+        try:
+            enhancer = enhancers[item['type']]
+        except Exception:
+            pass
+
+        payload = image_properties(json.dumps(item['scene_description']) + enhancer)
+
+        async with httpx.AsyncClient(timeout=40.0) as client:
+            response = await client.post(
+                url=StabilityIMGendpoint, 
+                headers=base_headers, 
+                json=payload
+            )
+
+        data = response.json()
+
+        image_base64 = data["artifacts"][0]["base64"]
+
+        image_name = uuid.uuid4()
+
+        image_path = os.path.join(image_dir, f"{image_name}.png")
+
+        with open(image_path, "wb") as f:
+            f.write(base64.b64decode(image_base64))
 
         item['image_url'] = f"{api_url}/images/{image_name}.png"
 
-        
     return prompt
     
 async def create_hero_image(description):
@@ -189,13 +247,13 @@ async def story(book_id: str, choice: str | None = None):
     return await create_storyline(choice_text=choice, book=book)
 
 @router.get("/books")
-def get_books():
+async def get_books():
     books = Book.objects().filter()
 
     return json.loads(books.to_json())
 
 @router.get("/books/new")
-def create_book():
+async def create_book():
     empty_book = Book.objects().filter(
         is_finished=False, 
         storyline__size=0 
@@ -220,7 +278,7 @@ def create_book():
 
 
 @router.get("/books/{book_id}")
-def get_book(book_id: str):
+async def get_book(book_id: str):
     book = Book.objects(id=book_id).first()
     
     return json.loads(book.to_json())
