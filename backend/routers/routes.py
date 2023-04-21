@@ -1,5 +1,6 @@
 
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 from models.models import *
 from settings.config import *
 from settings.image_settings import *
@@ -15,104 +16,119 @@ story_builder = [
     {
         "order": 0,
         "return_type": "choice",
-        "prequery": "generate a list of 6 story categories in strict json format no text with keys: text, type, image_description, image_url, description",
-        "postquery": ""
+        "prequery": "name 6 story genres that would make a great story.",
+        "postquery": "you should return your response in strict json format with keys: text, type, scene_description, description",
     },
     {
         "order": 1,
         "return_type": "text",
         "prequery": "",
-        "postquery": "based on the provided text generate the continuation of the story return text blob",
-    }
-    ,
+        "postquery": "you should return your response in strict json format with keys: text, scene_description",
+    },
     {
         "order": 2,
         "return_type": "choice",
-        "prequery": "",
-        "postquery": " generate a list of 6 common story places in strict  strict json format no text with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
+        "prequery": "name 6 story genres that would make a great story.",
+        "postquery": "you should return your response in strict json format with keys: text, type, scene_description, description",
     },
     {
         "order": 3,
         "return_type": "text",
         "prequery": "",
-        "postquery": " based on the provided text generate the continuation of the story return text blob",
-    }
-    ,
+        "postquery": "you should return your response in strict json format with keys: text, scene_description",
+    },
     {
         "order": 4,
         "return_type": "choice",
-        "prequery": "",
-        "postquery": " based on the provided text return 6 possible results in strict json format no text or list with keys: text,type,image_description, image_url,description. the returned data will describe possible heroes where the story could evolve",
+        "prequery": "name 6 story genres that would make a great story.",
+        "postquery": "you should return your response in strict json format with keys: text, type, scene_description, description",
     },
     {
         "order": 5,
         "return_type": "text",
         "prequery": "",
-        "postquery": " based on the provided text generate the continuation of the story return text blob",
+        "postquery": "you should return your response in strict json format with keys: text, scene_description",
     }
 ]
+
 
 def chatGpt(text):
     data = {
         "model": "gpt-3.5-turbo",
         "messages": [{"role": "assistant", "content": text }],
-        "temperature": 0.2
+        "temperature": 0.5,
+        "top_p": 0.1,
     }
 
     try:
         response = requests.post(
-            open_api_url, 
+            'https://api.openai.com/v1/chat/completions',
             headers=openapi_base_headers, 
             data=json.dumps(data)
         ).json()
 
-        return response['choices'][0]['message']['content']
+        return json.loads(response['choices'][0]['message']['content'])
     except Exception as e:
         raise Exception(f'Something went wrong with the chatGPT API: {response}')
 
-def unfinished_book_response(user, choice_text, unfinished_book):
-    unfinished_book['storyline'].sort(key=lambda x: x['order'], reverse=True)
 
-    storyline = unfinished_book['storyline'][0]
+async def create_storyline(choice_text, book):
+    book['storyline'].sort(key=lambda x: x['order'], reverse=True)
 
+    if len(book['storyline']) == 0:
+        order = 0
+        storyline= {
+            "order": 0,
+            "text": "",
+            "type": "choice",
+            "choices": []
+        }
+
+    else:
+        storyline = book['storyline'][0]
+        order = storyline['order'] + 1 
+
+    selected_choice = None
     if storyline['type'] == 'choice':
         for choice in storyline['choices']:
             if choice['text'] == choice_text:
+                selected_choice = choice
                 choice['is_chosen'] = True
-        user.save()
+        book.save()
 
-    order = storyline['order'] + 1 
     story = [story for story in story_builder if story['order'] == order][0]
-
-    response = chatGpt(f"{story['prequery']}{story['postquery']}")
+    
+    if selected_choice:
+        response = chatGpt(f"{story['prequery']}{choice['description']}{story['postquery']}")     
+    else:
+        response = chatGpt(f"{story['prequery']}{storyline['text']}{story['postquery']}")
+    
     if story['return_type'] == 'text':
         prompt = {
             "order": order,
             "prompt": "",
             "type": "text",
-            "image_url": "",
-            "choices": "",
-            "text": response
+            "image_url": await create_hero_image(response.get('scene_description', '')),
+            "choices": [],
+            "text": response.get('text', ''),
+            "scene_description": response.get('scene_description', '')
         }
 
     elif story['return_type'] == 'choice':
         prompt = {
             "order": order,
             "prompt": "",
-            "type": "choices",
+            "type": "choice",
             "image_url": "",
-            "choices": json.loads(response),
+            "choices": response,
             "text": ""
         }
+        prompt = await inject_images(prompt)
 
-    # FIXME: ↘  something wong with this one over here please check it
-    unfinished_book['storyline'].append(Prompt(
-        **prompt, 
-        choices=[Choice(**choice_data) for choice_data in prompt['choices']] if prompt['choices'] else None
-    ))
-    # ^^ ↗ 
+    book['storyline'].append(Prompt(**prompt))
+    
 
-    user.save()
+    book.save()
 
     return {
         "type": prompt['type'],
@@ -132,6 +148,7 @@ async def generate_image(prompt):
             json=payload
         )
 
+    
     data = response.json()
 
     image_base64 = data["artifacts"][0]["base64"]
@@ -146,58 +163,65 @@ async def generate_image(prompt):
     return image_name
 
 
-async def create_new_book_response(user):
-    story = [story for story in story_builder if story['order'] == 0][0]
+async def inject_images(prompt):
+    enhancer = 'detailed, high detail, modern,stylized,futuristic'
 
-    response = chatGpt(story['prequery'])
-
-    try:
-        generated_story = json.loads(response)
-        choices = generated_story if story['return_type'] == 'choice' else []
-
-    except Exception:
-        choices = []
-        raise Exception(f'ChatGpt returned invalid JSON: {response}')
-
-    book = Book(
-        id=f"book{user.id}",
-        name="",
-        is_finished=False,
-        storyline=[Prompt(
-            order=0,
-            prompt="",
-            type=story['return_type'],
-            image_url="",
-            text="",
-            choices=[Choice(**choice_data) for choice_data in choices] if choices else None
-        )]
-    )
-
-    user.books.append(book)
-    user.save()
-    
-    enhancer = 'cat, in a plain background,modern,stylized,futuristic'
     image_list = []
-    for item in choices:
+    for item in prompt['choices']:
         image_name = await generate_image(item['text'] + item['description'] + enhancer)
 
-        image_url = f"http://127.0.0.1:8000/images/{image_name}.png"
+        item['image_url'] = f"http://127.0.0.1:8000/images/{image_name}.png"
 
-        image_list.append({"image_url": image_url, "image_name": image_name})
-
-        for choice, image in zip(choices, image_list):
-            choice['image_url'] = image['image_url']
         
-    return choices
-
-
-@router.get("/story")
-async def story(choice_text: str | None = None):
-    user = User.objects(id='1').first()
-
-    unfinished_book = [book for book in user['books'] if book['is_finished'] == False]
+    return prompt
     
-    if len(unfinished_book) > 0:
-        return unfinished_book_response(user=user, choice_text=choice_text, unfinished_book=unfinished_book[0])
-    else:
-        return await create_new_book_response(user)
+async def create_hero_image(description):
+    enhancer = 'detailed, high detail, modern,stylized,futuristic'
+    image_name = await generate_image(description + enhancer)
+    return f"http://127.0.0.1:8000/images/{image_name}.png"
+
+@router.get("/books/{book_id}/story")
+async def story(book_id: str, choice: str | None = None):
+    book = Book.objects(id=book_id).first()
+
+    if book.is_finished:
+        return None
+
+    return await create_storyline(choice_text=choice, book=book)
+
+@router.get("/books")
+def get_books():
+    books = Book.objects().filter()
+
+    return json.loads(books.to_json())
+
+@router.get("/books/new")
+def create_book():
+    empty_book = Book.objects().filter(
+        is_finished=False, 
+        storyline__size=0 
+    ).first()
+                                
+    if empty_book:
+        return {
+            "book":empty_book.id
+        }
+
+    book = Book(
+        name="",
+        is_finished=False,
+        storyline=[]
+    )
+
+    book.save()
+
+    return {
+        "book":book.id
+    }
+
+
+@router.get("/books/{book_id}")
+def get_book(book_id: str):
+    book = Book.objects(id=book_id).first()
+    
+    return json.loads(book.to_json())
