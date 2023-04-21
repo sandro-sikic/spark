@@ -4,7 +4,7 @@ import AnimatedGradient from '@/components/AnimatedGradient';
 import Link from 'next/link';
 
 export async function getServerSideProps() {
-	let books: any = await fetch(`http://127.0.0.1:8000/books`);
+	let books: any = await fetch(`${process.env.API_URL}/books`);
 
 	books = await books.json();
 
@@ -36,6 +36,7 @@ export default function Bookshelf({ books }: { books: any }) {
 							key={book._id}
 							href={`/book/${book._id}/0`}
 						>
+							{/* TODO: change title, genre, image of book conver */}
 							<Book image="https://edit.org/images/cat/book-covers-big-2019101610.jpg" />
 							<div className="flex-col ml-6 sm:ml-12">
 								<h1 className="text-3xl">The adventures of Lily and Leo</h1>

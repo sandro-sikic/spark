@@ -148,7 +148,6 @@ async def generate_image(prompt):
             json=payload
         )
 
-    
     data = response.json()
 
     image_base64 = data["artifacts"][0]["base64"]
@@ -170,7 +169,7 @@ async def inject_images(prompt):
     for item in prompt['choices']:
         image_name = await generate_image(item['text'] + item['description'] + enhancer)
 
-        item['image_url'] = f"http://127.0.0.1:8000/images/{image_name}.png"
+        item['image_url'] = f"{api_url}/images/{image_name}.png"
 
         
     return prompt
@@ -178,7 +177,7 @@ async def inject_images(prompt):
 async def create_hero_image(description):
     enhancer = 'detailed, high detail, modern,stylized,futuristic'
     image_name = await generate_image(description + enhancer)
-    return f"http://127.0.0.1:8000/images/{image_name}.png"
+    return f"{api_url}/images/{image_name}.png"
 
 @router.get("/books/{book_id}/story")
 async def story(book_id: str, choice: str | None = None):
