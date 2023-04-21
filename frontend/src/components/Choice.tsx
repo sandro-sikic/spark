@@ -33,7 +33,7 @@ export default function Choice({
 		},
 	};
 
-	if (type === 'category') {
+	if (type === 'genre') {
 		return (
 			<button
 				className={`flex flex-col items-center flex-shrink-0 active:scale-105 hover:scale-110  transition-transform ${className}`}
@@ -57,7 +57,14 @@ export default function Choice({
 					/>
 				</svg>
 
-				<span className="text-lg sm:text-2xl tracking-wider mt-2">{text}</span>
+				<span
+					className="text-lg sm:text-2xl tracking-wider mt-2"
+					style={{
+						textDecoration: selected ? 'underline' : 'none',
+					}}
+				>
+					{text}
+				</span>
 			</button>
 		);
 	}
@@ -73,7 +80,14 @@ export default function Choice({
 				style={styles[type]}
 			/>
 
-			<span className="text-lg sm:text-2xl tracking-wider mt-2">{text}</span>
+			<span
+				className="text-lg sm:text-2xl tracking-wider mt-2"
+				style={{
+					textDecoration: selected ? 'underline' : 'none',
+				}}
+			>
+				{text}
+			</span>
 		</button>
 	);
 }
