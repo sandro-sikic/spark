@@ -32,7 +32,7 @@ type ParamsType = {
 export async function getServerSideProps({ query }: { query: ParamsType }) {
 	console.log('query', query);
 
-	let book: any = await fetch(`http://127.0.0.1:8000/books/${query.book}`);
+	let book: any = await fetch(`${process.env.API_URL}/books/${query.book}`);
 
 	book = await book.json();
 
@@ -42,7 +42,7 @@ export async function getServerSideProps({ query }: { query: ParamsType }) {
 
 	if (!storyline) {
 		let story: any = await fetch(
-			`http://127.0.0.1:8000/books/${query.book}/story?choice=${query.choice}`
+			`${process.env.API_URL}/books/${query.book}/story?choice=${query.choice}`
 		);
 
 		storyline = await story.json();

@@ -1,5 +1,5 @@
 export async function getServerSideProps() {
-	let book: any = await fetch(`http://127.0.0.1:8000/books/new`);
+	let book: any = await fetch(`${process.env.API_URL}/books/new`);
 
 	book = await book.json();
 
