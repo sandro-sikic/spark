@@ -68,7 +68,7 @@ export default function Home() {
 						</div>
 
 						<div>
-							<MenuItem title="Start" href="/story/book_id/0" />
+							<MenuItem title="Start" href="/book/new" />
 							<MenuItem title="Bookshelf" href="/bookshelf" />
 							<MenuItem title="About" href="/about" />
 						</div>

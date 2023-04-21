@@ -10,7 +10,7 @@ type ChoiceType = {
 	text: string;
 	type: string;
 	image_url: string;
-	image_description: string;
+	scene_description: string;
 	description: string;
 	is_chosen: boolean;
 };
@@ -24,18 +24,35 @@ type StoryLineType = {
 
 type ParamsType = {
 	book: string;
+	storyline: {};
 	storyline_order: string;
+	choice: string;
 };
 
-export async function getServerSideProps({ params }: { params: ParamsType }) {
-	// TODO: check route parameters if they work here
-	let data = await fetch(`http://127.0.0.1:8000/story`);
-	data = await data.json();
+export async function getServerSideProps({ query }: { query: ParamsType }) {
+	console.log('query', query);
+
+	let book: any = await fetch(`http://127.0.0.1:8000/books/${query.book}`);
+
+	book = await book.json();
+
+	let storyline: StoryLineType = book.storyline.find(
+		(element: { order: string }) => element.order == query.storyline_order
+	);
+
+	if (!storyline) {
+		let story: any = await fetch(
+			`http://127.0.0.1:8000/books/${query.book}/story?choice=${query.choice}`
+		);
+
+		storyline = await story.json();
+	}
 
 	return {
 		props: {
-			data,
-			params,
+			book,
+			query,
+			storyline,
 		},
 	};
 }
@@ -59,7 +76,7 @@ function StoryLine({
 			/>
 
 			<NextButton
-				href={`/story/${params.book}/${parseInt(params.storyline_order) + 1}`}
+				href={`/book/${params.book}/${parseInt(params.storyline_order) + 1}`}
 				className="z-10 mt-20"
 			/>
 		</>
@@ -76,7 +93,7 @@ function ChoiceLine({
 	const navigate = useRouter();
 
 	return (
-		<div className="max-w-screen-lg">
+		<div className="max-w-screen-lg mx-auto">
 			<AnimatedGradient bottom={0} fromColor="#522363" toColor="#234463" />
 
 			<div className="z-10 relative mx-auto flex flex-col flex-grow justify-center max-w-screen-md w-full h-full">
@@ -102,7 +119,7 @@ function ChoiceLine({
 									className="flex-[0_0_33.3%] pt-8"
 									onClick={() => {
 										navigate.push(
-											`/story/${params.book}/${
+											`/book/${params.book}/${
 												parseInt(params.storyline_order) + 1
 											}?choice=${choice.text}`
 										);
@@ -113,11 +130,11 @@ function ChoiceLine({
 				</div>
 
 				{data.some((choice: ChoiceType) => choice.is_chosen) && (
-					<div className="flex flex-wrap">
+					<div className="flex flex-wrap mt-10">
 						<div className="flex-[0_0_33.3%] flex justify-center">
 							<div className="w-40">
 								<NextButton
-									href={`/story/${params.book}/${
+									href={`/book/${params.book}/${
 										parseInt(params.storyline_order) + 1
 									}`}
 								/>
@@ -131,11 +148,11 @@ function ChoiceLine({
 }
 
 export default function BookPage({
-	data,
-	params,
+	storyline,
+	query,
 }: {
-	data: ChoiceType[] | string;
-	params: ParamsType;
+	storyline: StoryLineType;
+	query: ParamsType;
 }) {
 	return (
 		<main className="flex flex-col px-3 py-10 md:px-20 relative min-h-screen mx-auto max-w-screen-2xl ">
@@ -143,10 +160,12 @@ export default function BookPage({
 				<BackButton />
 			</header>
 
-			{Array.isArray(data) && <ChoiceLine data={data} params={params} />}
+			{storyline.type == 'choice' && (
+				<ChoiceLine data={storyline.choices} params={query} />
+			)}
 
-			{!Array.isArray(data) && typeof data === 'object' && (
-				<StoryLine data={data} params={params} />
+			{storyline.type == 'text' && (
+				<StoryLine data={storyline} params={query} />
 			)}
 		</main>
 	);
