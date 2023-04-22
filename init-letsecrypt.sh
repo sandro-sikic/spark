@@ -8,7 +8,7 @@ fi
 domains=(sparkai.site www.sparkai.site api.sparkai.site)
 rsa_key_size=4096
 data_path="./server/certbot"
-email="sandro.sikic@gmail.com" # Adding a valid address is strongly recommended
+email="" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
@@ -28,13 +28,11 @@ fi
 
 echo "### Requesting Let's Encrypt certificate for $domains ..."
 
-# Select appropriate email arg
 case "$email" in
   "") email_arg="--register-unsafely-without-email" ;;
   *) email_arg="--email $email" ;;
 esac
 
-# Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 for domain in "${domains[@]}"; do

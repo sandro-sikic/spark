@@ -45,7 +45,6 @@ services:
       - ./server/nginx/uwsgi_params:/etc/nginx/uwsgi_params
       - ./server/certbot/conf:/etc/letsencrypt
       - ./server/certbot/www:/var/www/certbot 
-      - static:/django_static
     ports:
       - 443:443
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
