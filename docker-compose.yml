@@ -34,6 +34,7 @@ services:
       - VIRTUAL_HOST=sparkai.site,www.sparkai.site,api.sparkai.site
       - LETSENCRYPT_HOST=sparkai.site,www.sparkai.site,api.sparkai.site
     networks:
+      - default
       - proxy_network
   
 volumes:
